@@ -13,6 +13,13 @@ N_TIME_WINDOW = 50
 N_MONTH_TO_PREDICT = 6
 INPUT_SHAPE = (N_FEATURES, N_TIME_WINDOW)
 
+
+
+"""
+merge two other neural networks
+https://statcompute.wordpress.com/2017/01/08/an-example-of-merge-layer-in-keras/
+https://nhanitvn.wordpress.com/2016/09/27/a-keras-layer-for-one-hot-encoding/
+"""
 def build_cnn():
     model = Sequential()
     model.add(Conv1D(32, kernel_size=(12), activation='relu', input_shape=INPUT_SHAPE))
