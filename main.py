@@ -9,10 +9,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import util
 import config
+import preprocessing
+
 """
 preparing data
+create training data 70%, testing data 30%
 """
-X_train, X_test, y_train, y_test = util.load_data_set()
+X_train, X_test, y_train, y_test = util.load_data_set(30, 33)
+m = preprocessing.get_sido_onehot_map()
 
 """
 merge two other neural networks
@@ -30,10 +34,14 @@ d_concatenated = Concatenate([l2_flat, d_sido])
 output = Dense(3, activation='softmax')(d_concatenated)
 
 model=Model(inputs=[d_features,d_sido],outputs=output)
-model.compile(optimizer='rmsprop')
+model.compile(optimizer='rmsprop',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
-model.fit([X_train, X_train], [y_train])
+# training
+model.fit( [X_train[0:config.N_FEATURES], m[X_train[config.N_FEATURES][0]]], [y_train])
 
+# save weight
+model.save_weights('{}.hdf5'.format('uk'))
 
-
-
+# finished..

@@ -4,7 +4,6 @@ import config
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-m = preprocessing.get_sido_onehot_map()
 yyyymm_list = preprocessing.get_yyyymm_list()
 sido_nm_list = preprocessing.get_sido_nm_list()
 features_nm_list = preprocessing.get_fetures_nm_list()
@@ -19,8 +18,10 @@ def load_data_set(percentage, random_state):
     df_x = df_x[['AreaName', 'YYYYMM', 'InfoType2', 'Values']]
     df_y = pd.read_csv('data\\y.txt', delimiter='\t', encoding='MS949')
 
-    l_training_feature = np.zeros([len(yyyymm_list)-config.N_TIME_WINDOW-config.N_TIME_WINDOW, config.N_FEATURES, config.N_TIME_WINDOW])
-    l_training_label = np.zeros([len(yyyymm_list)-config.N_TIME_WINDOW-config.N_TIME_WINDOW])
+    n_acceptable_yyyymm = len(yyyymm_list)-config.N_TIME_WINDOW-config.N_TIME_WINDOW+2
+
+    l_training_feature = np.zeros([n_acceptable_yyyymm * len(sido_nm_list), config.N_FEATURES + 1, config.N_TIME_WINDOW])
+    l_training_label = np.zeros([n_acceptable_yyyymm * len(sido_nm_list)])
 
     idx_yyyymm_inserting = 0
     for idx_yyyymm, yyyymm in enumerate(yyyymm_list):
@@ -38,16 +39,15 @@ def load_data_set(percentage, random_state):
                 for idx in range(config.N_TIME_WINDOW):
                     # create each row per feature during N_TIME_WINDOW
                     for idx_feature_nm, feature_nm in enumerate(features_nm_list):
-                        v = df_x[  (df_x['AreaName'] == sido_nm_list[idx_sido_nm]) &   (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm+idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])]
+                        v = df_x[  (df_x['AreaName'] == sido_nm_list[idx_sido_nm]) & (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm+idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])]
                         if v.shape[0] != 0:
                             # assert v.values[0,1] == yyyymm_list[idx]
                             # assert v.values[0,2] == feature_nm
                             # print(v.values[0,3])
                             l_training_feature[idx_yyyymm_inserting][idx_feature_nm][idx] = v.values[0,3]
-
+                l_training_feature[idx_yyyymm_inserting][config.N_FEATURES][0] = idx_sido_nm
                 present_rental_price_idx = df_y[(df_y['YYYYMM'] == yyyymm_list[idx])][sido_nm].values[0]
                 future_rental_price_idx = df_y[(df_y['YYYYMM'] == yyyymm_list[idx + config.N_MONTH_TO_PREDICT])][sido_nm].values[0]
-
                 gap = future_rental_price_idx - present_rental_price_idx
 
                 label = 0
