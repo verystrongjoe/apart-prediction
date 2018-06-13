@@ -39,7 +39,7 @@ https://nhanitvn.wordpress.com/2016/09/27/a-keras-layer-for-one-hot-encoding/
 # d_features = Input(shape=(1, config.N_FEATURES, config.N_TIME_WINDOW), name="features")
 # d_sido = Input(shape=(len(preprocessing.get_sido_nm_list()), ), name="sido_onehot")
 d_features = Input(shape=(config.N_TIME_WINDOW, config.N_FEATURES), name="features")
-d_sido = Input(shape=(384, len(preprocessing.get_fetures_nm_list())), name="sido_onehot")
+d_sido = Input(shape=(len(preprocessing.get_sido_nm_list()),), name="sido_onehot")
 
 l1 = Conv1D(32, kernel_size=(12), activation='relu')(d_features)
 l2 = Conv1D(64, kernel_size=(6), activation='relu')(l1)
@@ -47,11 +47,11 @@ l2_flat = Flatten()(l2)
 
 # d_concatenated = Concatenate([l2_flat, d_sido])
 # output = Dense(3, activation='softmax')(d_concatenated)
-output = Dense(3, activation='softmax')(l2_flat)
+output = Dense(1, activation='softmax')(l2_flat)
 
 model=Model(inputs=[d_features,d_sido],outputs=output)
 model.compile(optimizer='rmsprop',
-              loss='categorical_crossentropy',
+              loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
 # training
