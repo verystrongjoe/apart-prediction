@@ -10,13 +10,24 @@ from sklearn.model_selection import train_test_split
 import util
 import config
 import preprocessing
+import pickle
+import os
 
 """
 preparing data
 create training data 70%, testing data 30%
 """
-X_train, X_test, y_train, y_test = util.load_data_set(30, 33)
-m = preprocessing.get_sido_onehot_map()
+config.N_FEATURES = len(preprocessing.get_fetures_nm_list())
+
+if os.path.isfile('{}.pickle'.format(config.PICKLE_FILE_NAME)) :
+    f = open('{}.pickle'.format(config.PICKLE_FILE_NAME), 'rb')
+    l = pickle.load('{}.pickle'.format(config.PICKLE_FILE_NAME))
+    X_train, X_test, y_train, y_test, m = l[0], l[1], l[2], l[3], l[4]
+else:
+    X_train, X_test, y_train, y_test = util.load_data_set(30, 33)
+    m = preprocessing.get_sido_onehot_map()
+    f = open('{}.pickle'.format(config.PICKLE_FILE_NAME), 'wb')
+    pickle.dump([X_train, X_test, y_train, y_test, m], f)
 
 """
 merge two other neural networks
@@ -39,7 +50,7 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])
 
 # training
-model.fit( [X_train[0:config.N_FEATURES], m[X_train[config.N_FEATURES][0]]], [y_train])
+model.fit([X_train[0:config.N_FEATURES], m[X_train[config.N_FEATURES][0]]], [y_train])
 
 # save weight
 model.save_weights('{}.hdf5'.format('uk'))
