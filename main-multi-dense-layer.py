@@ -2,7 +2,7 @@ import  keras
 import pandas as pd
 from keras.models import Sequential
 from keras.layers import Conv1D, Flatten, Dense
-from keras.layers import Input, Lambda, Concatenate, Activation
+from keras.layers import Input, Lambda, Concatenate
 from keras import backend as K
 from keras.models import Model
 import numpy as np
@@ -18,16 +18,18 @@ preparing data
 create training data 70%, testing data 30%
 """
 config.N_FEATURES = len(preprocessing.get_fetures_nm_list())
+PICKLE_FILE_NAME = 'DENSE'
+MODEL_FILE_NAME = 'DENSE'
 
-if os.path.isfile('{}.pickle'.format(config.PICKLE_FILE_NAME)) :
-    f = open('{}.pickle'.format(config.PICKLE_FILE_NAME), 'rb')
+if os.path.isfile('{}.pickle'.format(PICKLE_FILE_NAME)) :
+    f = open('{}.pickle'.format(PICKLE_FILE_NAME), 'rb')
     print('loading pickle file from disk')
     l = pickle.load(f)
     X_train, X_test, y_train, y_test, m = l[0], l[1], l[2], l[3], l[4]
 else:
     X_train, X_test, y_train, y_test = util.load_data_set(30, 33)
     m = preprocessing.get_sido_onehot_map()
-    f = open('{}.pickle'.format(config.PICKLE_FILE_NAME), 'wb')
+    f = open('{}.pickle'.format(PICKLE_FILE_NAME), 'wb')
     pickle.dump([X_train, X_test, y_train, y_test, m], f)
     print('finished to dump pickle file from disk')
 
@@ -39,18 +41,14 @@ https://nhanitvn.wordpress.com/2016/09/27/a-keras-layer-for-one-hot-encoding/
 # d_features = Input(shape=(1, config.N_FEATURES, config.N_TIME_WINDOW), name="features")
 # d_sido = Input(shape=(len(preprocessing.get_sido_nm_list()), ), name="sido_onehot")
 d_features = Input(shape=(config.N_TIME_WINDOW, config.N_FEATURES), name="features")
-d_sido = Input(shape=(len(preprocessing.get_sido_nm_list()),), name="sido_onehot")
+# d_sido = Input(shape=(len(preprocessing.get_sido_nm_list()),), name="sido_onehot")
 
-l1 = Conv1D(32, kernel_size=(12), activation='relu')(d_features)
-l2 = Conv1D(64, kernel_size=(6), activation='relu')(l1)
-l2_flat = Flatten()(l2)
+d1 = Dense(32)(d_features)
+d2 = Dense(32)(d1)
+d3 = Dense(32)(d2)
+output = Dense(3, activation='softmax')(d3)
 
-# d_concatenated = Concatenate([l2_flat, d_sido])
-# output = Dense(3, activation='softmax')(d_concatenated)
-output = Dense(3, activation='softmax')(l2_flat)
-
-
-model = Model(inputs=[d_features,d_sido],outputs=output)
+model = Model(inputs=d_features,outputs=output)
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
@@ -62,7 +60,7 @@ model.fit(
     np.array(keras.utils.to_categorical(y_train, 3)), epochs=20, batch_size=10)
 
 # save weight
-model.save_weights('{}.hdf5'.format('UK'))
+model.save_weights('{}.hdf5'.format(MODEL_FILE_NAME))
 
 # finished and predict using training model above!!
 score = model.evaluate(

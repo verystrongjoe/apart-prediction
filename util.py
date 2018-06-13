@@ -50,13 +50,16 @@ def load_data_set(percentage, random_state):
                 future_rental_price_idx = df_y[(df_y['YYYYMM'] == yyyymm_list[config.N_TIME_WINDOW-idx-1+ config.N_MONTH_TO_PREDICT])][sido_nm].values[0]
                 gap = future_rental_price_idx - present_rental_price_idx
 
-                label = 0
+                label = None
                 if gap > 0 and gap >= config.PERCENTAGE_LOWER_BAND_THRESHOLD:
-                    label = 1  # up
+                    # label = [1, 0, 0]  # up
+                    label = 0
                 elif gap < 0 and np.abs(gap) >= config.PERCENTAGE_LOWER_BAND_THRESHOLD:
-                    label = -1  # down
+                    # label = [0, 1, 0]  # down
+                    label = 1
                 else:
-                    label = 0  # no change
+                    # label = [0, 0, 1]  # no change
+                    label = 2
 
                 l_training_label[idx_yyyymm_inserting] = label
                 idx_yyyymm_inserting = idx_yyyymm_inserting + 1
