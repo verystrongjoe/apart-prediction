@@ -3,12 +3,16 @@ import preprocessing
 import config
 import numpy as np
 from sklearn.model_selection import train_test_split
+import time
 
 yyyymm_list = preprocessing.get_yyyymm_list()
 sido_nm_list = preprocessing.get_sido_nm_list()
 features_nm_list = preprocessing.get_fetures_nm_list()
 
 def load_data_set(percentage, random_state):
+
+    start_time = time.time()
+
     df_61 = pd.read_csv('data\\kab61.csv')
     df_71 = pd.read_csv('data\\kab71.csv')
     df_61_filtered = df_61[['AreaName', 'YYYYMMDD', 'InfoType2', 'Values']]
@@ -51,7 +55,7 @@ def load_data_set(percentage, random_state):
                 gap = future_rental_price_idx - present_rental_price_idx
 
                 label = None
-                if gap > 0 and gap >= config.PERCENTAGE_LOWER_BAND_THRESHOLD:
+                if gap > 0 and gap >= config.PERCENTAGE_UPPER_BAND_THRESHOLD:
                     # label = [1, 0, 0]  # up
                     label = 0
                 elif gap < 0 and np.abs(gap) >= config.PERCENTAGE_LOWER_BAND_THRESHOLD:
@@ -66,6 +70,11 @@ def load_data_set(percentage, random_state):
 
     print('{} shape is {}'.format('l_training_feature', l_training_feature.shape))
     print('{} shape is {}'.format('l_training_label', l_training_label.shape))
+
+    end_time = time.time()
+    print('--- {} seconds took to generate training data ---'.format(end_time-start_time))
+
+
     """
     it needs to be adapted multi index
     https://pandas.pydata.org/pandas-docs/version/0.22.0/advanced.html
