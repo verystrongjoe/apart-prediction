@@ -43,7 +43,9 @@ def load_data_set(percentage, random_state):
                 for idx in reversed(range(config.N_TIME_WINDOW)):
                     # create each row per feature during N_TIME_WINDOW
                     for idx_feature_nm, feature_nm in enumerate(features_nm_list):
-                        v = df_x[(df_x['AreaName'] == sido_nm_list[idx_sido_nm]) & (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm-idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])]
+                        # v = df_x[(df_x['AreaName'] == sido_nm_list[idx_sido_nm]) & (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm-idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])]
+
+                        v = pd.eval("(df_x['AreaName'] == sido_nm_list[idx_sido_nm]) & (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm-idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])")
                         if v.shape[0] != 0:
                             # assert v.values[0,1] == yyyymm_list[idx]
                             # assert v.values[0,2] == feature_nm

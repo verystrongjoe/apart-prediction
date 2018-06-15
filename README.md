@@ -14,10 +14,32 @@ preprocessing.py : 시도별 월별 기준 데이터 생성
 
 util.py : training, test 데이터셋 로드
 
+### How to run
 
-## Model
 
-### Parameter
+### Temporal CNN
+```
+run main.py
+```
+
+### Conditional CNN
+```
+run main-conditional-cnn.py
+```
+
+## Architecture 
+
+### Model #1
+![model1](/materials/model1.jpg)
+
+
+### Model #2
+![model2](/materials/model2.jpg)
+
+
+### Parameters
+you can change parameters editing config.py 
+```
 N_FEATURES = 피처의 개수
 
 N_TIME_WINDOW = 타임 윈도우 크기
@@ -29,12 +51,16 @@ PERCENTAGE_UPPER_BAND_THRESHOLD = 상승 Upper band 기준
 PERCENTAGE_LOWER_BAND_THRESHOLD = 상승 Lower band 기준 
 
 PICKLE_FILE_NAME = PICKLE 파일 명
-
-### Conditional CNN
-TBD
+```
 
 ## Plan
 TBD
 
 ## Reference
-TBD
+1. [IMF이후아파트전세가율에관한연구](http://www.riss.kr/search/detail/DetailView.do?p_mat_type=1a0202e37d52c72d&control_no=f9976b189dbbf0dbffe0bdc3ef48d419)
+
+2. [아파트매매가격과전세가격의상호확산효과](http://www.riss.kr/search/detail/DetailView.do?p_mat_type=1a0202e37d52c72d&control_no=916352bebbead0807ecd42904f0c5d65)
+
+3. [거시경제변수를고려한서울아파트가격의추세-순환분석](http://www.riss.kr/search/detail/DetailView.do?p_mat_type=1a0202e37d52c72d&control_no=5752bb743fe5455bd18150b21a227875#redirect)
+
+4. [APT 전세가와매매가상호영향력에관한실증적연구: 강남지역APT를중심으로](http://www.riss.kr/search/detail/)
