@@ -45,7 +45,7 @@ def load_data_set(percentage, random_state, mode=1):
                     for idx_feature_nm, feature_nm in enumerate(features_nm_list):
 
                         if mode == 1 :
-                            v = df_x[(df_x['AreaName'] == sido_nm_list[idx_sido_nm]) & (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm-idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])]
+                            v = df_x.query('AreaName == "{sido_nm}" and YYYYMM == "{YYYYMM}" and InfoType2 == "{feature}"'.format(sido_nm=sido_nm, YYYYMM=yyyymm_list[idx_yyyymm-idx], feature=feature_nm))
                         elif mode == 2 :
                             v = df_x[pd.eval("(df_x['AreaName'] == sido_nm_list[idx_sido_nm]) & (df_x['YYYYMM'] == yyyymm_list[idx_yyyymm-idx]) & (df_x['InfoType2'] == features_nm_list[idx_feature_nm])")]
                         if v.size != 0:
@@ -53,7 +53,7 @@ def load_data_set(percentage, random_state, mode=1):
                             # assert v.values[0,2] == feature_nm
                             # print(v.values[0,3])
                             l_training_feature[idx_yyyymm_inserting][config.N_TIME_WINDOW-idx-1][idx_feature_nm] = v.values[0,3]
-                l_training_feature[idx_yyyymm_inserting][0][config.N_FEATURES] = idx_sido_nm
+                l_training_feature[idx_yyyymm_inserting, 0, config.N_FEATURES] = idx_sido_nm
                 present_rental_price_idx = df_y[(df_y['YYYYMM'] == yyyymm_list[config.N_TIME_WINDOW-idx-1])][sido_nm].values[0]
                 future_rental_price_idx = df_y[(df_y['YYYYMM'] == yyyymm_list[config.N_TIME_WINDOW-idx-1+ config.N_MONTH_TO_PREDICT])][sido_nm].values[0]
                 gap = future_rental_price_idx - present_rental_price_idx
